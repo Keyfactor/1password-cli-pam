@@ -1,0 +1,14 @@
+{
+  "extensions": {
+    "Keyfactor.Platform.Extensions.IPAMProvider": {
+      "PAMProviders.1Password-CLI.PAMProvider": {
+        "assemblyPath": "1password-cli-pam.dll",
+        "TypeFullName": "Keyfactor.Extensions.Pam._1Password.CliPam"
+      }
+    }
+  },
+  "Keyfactor:PAMProviders:1Password-CLI:InitializationInfo": {
+    "Vault": "orchestrator-secrets",
+    "Token": "xxxxxx"
+  }
+}

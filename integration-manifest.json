@@ -1,0 +1,54 @@
+{
+  "$schema": "https://keyfactor.github.io/v2/integration-manifest-schema.json",
+  "integration_type": "pam",
+  "name": "1Password CLI PAM Provider",
+  "status": "production",
+  "support_level": "kf-supported",
+  "update_catalog": true,
+  "link_github": true,
+  "release_dir": "1password-cli-pam/bin/Release/netstandard2.0",
+  "description": "The 1Password CLI PAM Provider allows for the retrieval of stored account credentials from a Vault in 1Password using the CLI tool. A service account must be set up and granted permission to the appropriate Vault(s). The Token used is the authentication Token from the configured Service Account.",
+  "about": {
+    "pam": {
+      "providerName": "1Password CLI PAM Provider",
+      "assemblyName": "1password-cli-pam",
+      "dbName": "1Password-CLI",
+      "fullyQualifiedClassName": "Keyfactor.Extensions.Pam._1Password.CliPam",
+      "pam_types": {
+        "1Password-CLI": {
+          "Name": "1Password-CLI",
+          "Parameters": [
+            {
+              "Name": "Vault",
+              "DisplayName": "1Password Secret Vault",
+              "DataType": 1,
+              "InstanceLevel": false,
+              "Description": "The name of the Vault in 1Password."
+            },
+            {
+              "Name": "Token",
+              "DisplayName": "1Password Service Account Token",
+              "DataType": 2,
+              "InstanceLevel": false,
+              "Description": "The Service Account Token that is configured to access the specified Vault."
+            },
+            {
+              "Name": "Item",
+              "DisplayName": "1Password Item Name",
+              "DataType": 1,
+              "InstanceLevel": true,
+              "Description": "The name of the credential item in 1Password. This could be the name of a Login object or a Password object."
+            },
+            {
+              "Name": "Field",
+              "DisplayName": "Field Name on Item",
+              "DataType": 1,
+              "InstanceLevel": true,
+              "Description": "The name of the Field to retrieve from the specified Item. For a Login, this would be 'username' or 'password'. For an API Credential this would be 'credential'."
+            }
+          ]
+        }
+      }
+    }
+  }
+}
