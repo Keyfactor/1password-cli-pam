@@ -53,7 +53,11 @@ Before proceeding with installation, you should consider which pattern is best f
 
 ### Installation
 
-To install 1Password CLI PAM Provider, you must install [kfutil](https://github.com/Keyfactor/kfutil). Kfutil is a command-line tool that simplifies the process of creating PAM Types in Keyfactor Command, among many other useful automation features.
+> [!IMPORTANT]
+> For the most up-to-date and complete documentation on how to install a PAM provider extension, please visit our [product documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/ReferenceGuide/Preparing%20Third%20Party%20PAM%20Providers%20to%20Work%20with.htm?Highlight=pam%20provider#InstallingCustomPAMProviderExtensions)
+
+
+To install 1Password CLI PAM Provider, it is recommended you install [kfutil](https://github.com/Keyfactor/kfutil). `kfutil` is a command-line tool that simplifies the process of creating PAM Types in Keyfactor Command.
 
 
 
@@ -61,31 +65,69 @@ To install 1Password CLI PAM Provider, you must install [kfutil](https://github.
 
 
 
-#### Prerequisites
+#### Requirements
+   In order to use this PAM Provider extension, the 1Password CLI must be installed.
 
-1. Follow the [requirements section](docs/1password-cli.md#requirements) to configure a Service Account, grant necessary API permissions, and create secrets.
+   Refer to the [1Password CLI documentation](https://developer.1password.com/docs/cli/get-started/) for how to install the CLI and add it to the execution path.
+   After the CLI is installed, it is prudent to verify that the integration will be able to reach it, by opening a new PowerShell terminal and typing the simple command `op`. This should not result in an error and instead show the top-level help info for the CLI.
 
-    <details><summary>Requirements</summary>
-    In order to use this PAM Provider extension, the 1Password CLI must be installed.
+   A Service Account also needs to be created and configured with a Service Account Token. Refer to the [1Password Service Accounts documentation](https://developer.1password.com/docs/service-accounts/get-started/) for how to set up and provision a Service Account.
+   Please note that Service Account Tokens are associated with Vaults at time of creation. If additional Vaults are later added that need to be accessed, the Token will need to be reconfigured to be granted acccess to additional Vaults.
 
-    Refer to the [1Password CLI documentation](https://developer.1password.com/docs/cli/get-started/) for how to install the CLI and add it to the execution path.
-    After the CLI is installed, it is prudent to verify that the integration will be able to reach it, by opening a new PowerShell terminal and typing the simple command `op`. This should not result in an error and instead show the top-level help info for the CLI.
+   Since this extension expects to be able to run the CLI in a PowerShell session, the account running the Keyfactor service that uses this PAM Provider will need to be able to access and use PowerShell.
 
-    A Service Account also needs to be created and configured with a Service Account Token. Refer to the [1Password Service Accounts documentation](https://developer.1password.com/docs/service-accounts/get-started/) for how to set up and provision a Service Account.
-    Please note that Service Account Tokens are associated with Vaults at time of creation. If additional Vaults are later added that need to be accessed, the Token will need to be reconfigured to be granted acccess to additional Vaults.
+#### Create PAM type in Keyfactor Command
 
-    Since this extension expects to be able to run the CLI in a PowerShell session, the account running the Keyfactor service that uses this PAM Provider will need to be able to access and use PowerShell.
 
-    </details>
+##### Using `kfutil`
+Create the required PAM Types in the connected Command platform.
 
-2. Use kfutil to create the required PAM Types in the connected Command platform.
+```shell
+# 1Password-CLI
+kfutil pam types-create -r 1password-cli-pam -n 1Password-CLI
+```
 
-    ```shell
-    # 1Password-CLI
-    kfutil pam types-create -r 1password-cli-pam -n 1Password-CLI
-    ```
+##### Using the API
+For full API docs please visit our [product documentation](https://software.keyfactor.com/Core-OnPrem/Current/Content/WebAPI/KeyfactorAPI/PAMProvidersPOSTTypes.htm?Highlight=pam%20type)
 
-#### Install on Keyfactor Command (Local)
+Below is the payload to `POST` to the Keyfactor Command API
+```json
+{
+    "Name": "1Password-CLI",
+    "Parameters": [
+        {
+            "Name": "Vault",
+            "DisplayName": "1Password Secret Vault",
+            "DataType": 1,
+            "InstanceLevel": false,
+            "Description": "The name of the Vault in 1Password."
+        },
+        {
+            "Name": "Token",
+            "DisplayName": "1Password Service Account Token",
+            "DataType": 2,
+            "InstanceLevel": false,
+            "Description": "The Service Account Token that is configured to access the specified Vault."
+        },
+        {
+            "Name": "Item",
+            "DisplayName": "1Password Item Name",
+            "DataType": 1,
+            "InstanceLevel": true,
+            "Description": "The name of the credential item in 1Password. This could be the name of a Login object or a Password object."
+        },
+        {
+            "Name": "Field",
+            "DisplayName": "Field Name on Item",
+            "DataType": 1,
+            "InstanceLevel": true,
+            "Description": "The name of the Field to retrieve from the specified Item. For a Login, this would be 'username' or 'password'. For an API Credential this would be 'credential'."
+        }
+    ]
+}
+```
+
+#### Install PAM provider on Keyfactor Command Host (Local)
 
 
 
@@ -97,9 +139,9 @@ To install 1Password CLI PAM Provider, you must install [kfutil](https://github.
 
     1. Copy the unzipped assemblies to each of the following directories:
 
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\Extensions\PamProviders\1password-cli-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\Extensions\PamProviders\1password-cli-pam`
-        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\Extensions\PamProviders`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebAgentServices\Extensions\1password-cli-pam`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\WebConsole\Extensions\1password-cli-pam`
+        * `C:\Program Files\Keyfactor\Keyfactor Platform\KeyfactorAPI\Extensions\1password-cli-pam`
 
     </details>
 
@@ -140,7 +182,7 @@ To install 1Password CLI PAM Provider, you must install [kfutil](https://github.
 
 
 
-#### Install on a Universal Orchestrator (Remote)
+#### Install PAM provider on a Universal Orchestrator Host (Remote)
 
 
 1. Install the 1Password CLI PAM Provider assemblies.
@@ -161,9 +203,7 @@ To install 1Password CLI PAM Provider, you must install [kfutil](https://github.
         * **Linux**: `/opt/keyfactor/orchestrator/extensions/1password-cli-pam`
 
 2. Included in the release is a `manifest.json` file that contains the following object:
-
     ```json
-    // 1password-cli-pam/manifest.json
 
     {
         "Keyfactor:PAMProviders:1Password-CLI:InitializationInfo": {
@@ -193,7 +233,7 @@ To install 1Password CLI PAM Provider, you must install [kfutil](https://github.
 
 
 
-#### Keyfactor Command (Local)
+#### From Keyfactor Command Host (Local)
 
 
 
@@ -202,7 +242,8 @@ To install 1Password CLI PAM Provider, you must install [kfutil](https://github.
 
 2. Select the **Add** button to create a new PAM provider. Click the dropdown for **Provider Type** and select **1Password-CLI**.
 
-    > If you're running Keyfactor Command 11+, make sure "Remote Provider" is unchecked.
+> [!IMPORTANT]
+> If you're running Keyfactor Command 11+, make sure `Remote Provider` is unchecked.
 
 3. Populate the fields with the necessary information collected in the [requirements](docs/1password-cli.md#requirements) section:
 
@@ -229,7 +270,7 @@ Select the **Load From PAM Provider** tab, choose the **1Password-CLI** provider
 
 
 
-#### Universal Orchestrator (Remote)
+#### From a Universal Orchestrator Host (Remote)
 
 
 
@@ -243,7 +284,7 @@ In Command 11 and greater, before using the 1Password-CLI PAM type, you must def
 
 2. Select the **Add** button to create a new PAM provider.
 
-3. Make sure that "Remote Provider" is checked.
+3. Make sure that `Remote Provider` is checked.
 
 4. Click the dropdown for **Provider Type** and select **1Password-CLI**. 
 
@@ -285,7 +326,8 @@ When entering Secret fields, select the **Load From Keyfactor Secrets** tab, and
 
 
 
-> Additional information on 1Password-CLI can be found in the [supplimental documentation](docs/1password-cli.md).
+> [!NOTE]
+> Additional information on 1Password-CLI can be found in the [supplemental documentation](docs/1password-cli.md).
 
 
 
