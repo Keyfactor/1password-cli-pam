@@ -18,12 +18,7 @@ Please note that Service Account Tokens are associated with Vaults at time of cr
 
 Since this extension expects to be able to run the CLI in a PowerShell session, the account running the Keyfactor service that uses this PAM Provider will need to be able to access and use PowerShell.
 
-
-## Mechanics
+## Extension Mechanics
 
 The 1Password CLI PAM Provider uses the 1Password CLI to retrieve credential information. It executes `op read` commands in PowerShell sessions that return that credential information.
 The Service Account Token, which acts as an authentication string, is entered into each PowerShell session that is started.
-
-
-
-
